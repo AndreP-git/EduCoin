@@ -35,7 +35,7 @@ class Wallet(tk.Frame):
         self.create_widgets()
         
     def create_widgets(self):
-        
+        # Title label
         self.title = tk.Label(self.master, text="=============================\n" + 
           "Welcome to EduCoin!\n" + 
           f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
@@ -43,28 +43,26 @@ class Wallet(tk.Frame):
           "Select action:\n")
         self.title["font"] = ("Arial", 24, "bold")
         self.title.pack(pady=10) 
-              
+            
+        # Generate button  
         self.generate_button = tk.Button(self.master)
         self.generate_button["text"] = "Generate new wallet"
         self.generate_button["command"] = self.generate_new_wallet
         self.generate_button.pack(pady=10)
         
+        # Transfer button
         self.transfer_button = tk.Button(self.master)
         self.transfer_button["text"] = "Transfer coins"
         self.transfer_button["command"] = self.transfer_coins
         self.transfer_button.pack(pady=10)
         
+        # Check button
         self.check_button = tk.Button(self.master)
         self.check_button["text"] = "Check transactions"
         self.check_button["command"] = self.check_transactions
-        self.check_button.pack(pady=10)
-        
-        # self.generate_new_wallet = tk.Entry(self)
-        # self.transfer_coins = tk.Entry(self)
-        # self.check_transactions = tk.Entry(self)        
+        self.check_button.pack(pady=10)       
     
     def generate_new_wallet(self):
-        
         # Generate new window
         self.generate_window = tk.Toplevel(self.master)
         self.generate_window.title("Generate new wallet")
@@ -86,7 +84,55 @@ class Wallet(tk.Frame):
                                          command=self.generate_ECDSA_keys).pack(pady=10)
     
     def transfer_coins(self):
-        pass
+        # Generate new window
+        self.transfer_window = tk.Toplevel(self.master)
+        self.transfer_window.title("Transfer coins")
+        self.transfer_window.geometry("700x500")
+        
+        # FROM address
+        self.from_text = tk.Label(self.transfer_window, text="FROM:").pack(pady=10)
+        self.from_str = tk.StringVar(self.transfer_window)
+        self.from_str.set("Introduce your wallet address (public key)")
+        self.from_entry = tk.Entry(self.transfer_window,
+                                       textvariable=self.from_str,
+                                       width=100)
+        self.from_entry.bind('<Button-1>', lambda event: self.from_str.set(""))
+        self.from_entry.pack(pady=10)
+        
+        # Private key
+        self.private_text = tk.Label(self.transfer_window, text="PRIVATE KEY:").pack(pady=10)
+        self.private_str = tk.StringVar(self.transfer_window)
+        self.private_str.set("Introduce your private key")
+        self.private_entry = tk.Entry(self.transfer_window,
+                                       textvariable=self.private_str,
+                                       width=100)
+        self.private_entry.bind('<Button-1>', lambda event: self.private_str.set(""))
+        self.private_entry.pack(pady=10)
+        
+        # TO address
+        self.to_text = tk.Label(self.transfer_window, text="TO:").pack(pady=10)
+        self.to_str = tk.StringVar(self.transfer_window)
+        self.to_str.set("Introduce destination wallet address")
+        self.to_entry = tk.Entry(self.transfer_window,
+                                       textvariable=self.to_str,
+                                       width=100)
+        self.to_entry.bind('<Button-1>', lambda event: self.to_str.set(""))
+        self.to_entry.pack(pady=10)
+        
+        # Amount
+        self.amount_text = tk.Label(self.transfer_window, text="AMOUNT:").pack(pady=10)
+        self.amount_str = tk.StringVar(self.transfer_window)
+        self.amount_str.set("Introduce the amount of coins")
+        self.amount_entry = tk.Entry(self.transfer_window,
+                                       textvariable=self.amount_str,
+                                       width=100)
+        self.amount_entry.bind('<Button-1>', lambda event: self.amount_str.set(""))
+        self.amount_entry.pack(pady=10)
+        
+        # Confirm button
+        self.confirm_button = tk.Button(self.transfer_window,
+                                         text="Confirm",
+                                         command=self.send_transaction).pack(pady=10)
     
     def check_transactions(self):
         pass
@@ -100,12 +146,14 @@ class Wallet(tk.Frame):
             2. Transfer coins
             3. Check transactions
             4. Quit\n""")
+        
         if response == "1":
             # Generate new wallet
             print("""=========================================\n
     IMPORTANT: save this credentials or you won't be able to recover your wallet\n
     =========================================\n""")
             self.generate_ECDSA_keys()
+        
         elif response == "2":
             addr_from = input("From: introduce your wallet address (public key)\n")
             private_key = input("Introduce your private key\n")
@@ -119,6 +167,7 @@ class Wallet(tk.Frame):
                 self.send_transaction(addr_from, private_key, addr_to, amount)
             elif response.lower() == "n":
                 return wallet()  # return to main menu
+        
         elif response == "3":  # Will always occur when response == 3.
             self.check_transactions()
             return wallet()  # return to main menu
@@ -126,19 +175,30 @@ class Wallet(tk.Frame):
             quit()
 
 
-    def send_transaction(self, addr_from, private_key, addr_to, amount):
+    def send_transaction(self):
         """Sends your transaction to different nodes. Once any of the nodes manage
         to mine a block, your transaction will be added to the blockchain. Despite
         that, there is a low chance your transaction gets canceled due to other nodes
         having a longer chain. So make sure your transaction is deep into the chain
         before claiming it as approved!
         """
-        # For fast debugging REMOVE LATER
-        # private_key="181f2448fa4636315032e15bb9cbc3053e10ed062ab0b2680a37cd8cb51f53f2"
-        # amount="3000"
-        # addr_from="SD5IZAuFixM3PTmkm5ShvLm1tbDNOmVlG7tg6F5r7VHxPNWkNKbzZfa+JdKmfBAIhWs9UKnQLOOL1U+R3WxcsQ=="
-        # addr_to="SD5IZAuFixM3PTmkm5ShvLm1tbDNOmVlG7tg6F5r7VHxPNWkNKbzZfa+JdKmfBAIhWs9UKnQLOOL1U+R3WxcsQ=="
+        
+        # Debug control variable
+        debug = True
+        
+        # For fast debugging
+        addr_from="SD5IZAuFixM3PTmkm5ShvLm1tbDNOmVlG7tg6F5r7VHxPNWkNKbzZfa+JdKmfBAIhWs9UKnQLOOL1U+R3WxcsQ=="
+        private_key="181f2448fa4636315032e15bb9cbc3053e10ed062ab0b2680a37cd8cb51f53f2"
+        addr_to="SD5IZAuFixM3PTmkm5ShvLm1tbDNOmVlG7tg6F5r7VHxPNWkNKbzZfa+JdKmfBAIhWs9UKnQLOOL1U+R3WxcsQ=="
+        amount="3000"
 
+        # these variables should be checked!
+        if not debug:
+            addr_from = self.from_entry.get()
+            private_key = self.private_entry.get()
+            addr_to = self.to_entry.get()
+            amount = self.amount_entry.get()
+        
         if len(private_key) == 64:
             signature, message = self.sign_ECDSA_msg(private_key)
             url = 'http://localhost:5000/txion'
@@ -150,9 +210,11 @@ class Wallet(tk.Frame):
             headers = {"Content-Type": "application/json"}
 
             res = requests.post(url, json=payload, headers=headers)
-            print(res.text)
+            #print(res.text)
+            self.confirm_label = tk.Label(self.transfer_window, text=res.text).pack(pady=10)
         else:
-            print("Wrong address or key length! Verify and try again.")
+            #print("Wrong address or key length! Verify and try again.")
+            self.confirm_label = tk.Label(self.generate_window, text="Wrong address or key length! Verify and try again.").pack(pady=10)
 
 
     def check_transactions():
@@ -191,7 +253,7 @@ class Wallet(tk.Frame):
         #print(F"Your new address and private key are now in the file {filename}")
         self.confirm_label = tk.Label(self.generate_window, text="Your new address and private key are now in the file: " + filename).pack(pady=10)
 
-    def sign_ECDSA_msg(private_key):
+    def sign_ECDSA_msg(self, private_key):
         """Sign the message to be sent
         private_key: must be hex
 
