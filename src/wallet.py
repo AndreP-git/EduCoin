@@ -77,11 +77,13 @@ class Wallet(tk.Frame):
         
         # Filename entry
         self.filename_text = tk.Label(self.generate_window, text="Write the name of your new address:").pack(pady=10)
-        self.filename_entry = tk.Entry(self.generate_window, width=100).pack(pady=10)
+        self.filename = tk.StringVar(self.generate_window)
+        self.filename_entry = tk.Entry(self.generate_window,
+                                       textvariable=self.filename,
+                                       width=100).pack(pady=10)
         self.filename_button = tk.Button(self.generate_window,
                                          text="Generate",
                                          command=self.generate_ECDSA_keys).pack(pady=10)
-        #self.filename_button.bind("ButtonRelease", self.generate_ECDSA_keys)
     
     def transfer_coins(self):
         pass
@@ -165,7 +167,7 @@ class Wallet(tk.Frame):
             print('Connection error. Make sure that you have run miner.py in another terminal.')
 
 
-    def generate_ECDSA_keys(self, event):
+    def generate_ECDSA_keys(self):
         """This function takes care of creating your private and public (your address) keys.
         It's very important you don't lose any of them or those wallets will be lost
         forever. If someone else get access to your private key, you risk losing your coins.
@@ -181,13 +183,13 @@ class Wallet(tk.Frame):
         public_key = base64.b64encode(bytes.fromhex(public_key))
 
         filename = "wallet_" + str(time.time()) + ".txt"
-        filename = self.filename_entry.get()
+        filename = self.filename.get() + ".txt"
         
         #filename = input("Write the name of your new address: ") + ".txt"
         with open(filename, "w") as f:
             f.write(F"Private key: {private_key}\nWallet address / Public key: {public_key.decode()}")
         #print(F"Your new address and private key are now in the file {filename}")
-        self.confirm_label = tk.Label(self.generate_window, text="Your new address and private key are now in the file:" + filename).pack(pady=10)
+        self.confirm_label = tk.Label(self.generate_window, text="Your new address and private key are now in the file: " + filename).pack(pady=10)
 
     def sign_ECDSA_msg(private_key):
         """Sign the message to be sent
