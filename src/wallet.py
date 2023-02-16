@@ -134,9 +134,6 @@ class Wallet(tk.Frame):
                                          text="Confirm",
                                          command=self.send_transaction).pack(pady=10)
     
-    def check_transactions(self):
-        pass
-    
     def wallet(self):
         
         response = None
@@ -217,16 +214,33 @@ class Wallet(tk.Frame):
             self.confirm_label = tk.Label(self.generate_window, text="Wrong address or key length! Verify and try again.").pack(pady=10)
 
 
-    def check_transactions():
+    def check_transactions(self):
         """Retrieve the entire blockchain. With this you can check your
         wallets balance. If the blockchain is to long, it may take some time to load.
         """
+        
+        # Generate new window
+        self.check_window = tk.Toplevel(self.master)
+        self.check_window.title("Check transactions")
+        self.check_window.geometry("700x500")
+        
+        # Transaction label
+        self.title = tk.Label(self.check_window, text="Transaction list:")
+        self.title["font"] = ("Arial", 12, "bold")
+        self.title.pack(pady=10)
+        
+        # Output editor
+        self.editor = tk.Text(self.check_window, width=50, height=100)
+        self.editor.pack(pady=10)
+        
         try:
             res = requests.get('http://localhost:5000/blocks')
             parsed = json.loads(res.text)
-            print(json.dumps(parsed, indent=4, sort_keys=True))
+            #print(json.dumps(parsed, indent=4, sort_keys=True))
+            self.editor.insert(tk.END, json.dumps(parsed, indent=4, sort_keys=True))
         except requests.ConnectionError:
-            print('Connection error. Make sure that you have run miner.py in another terminal.')
+            #print('Connection error. Make sure that you have run miner.py in another terminal.')
+            self.editor.insert(tk.END, "Connection error. Make sure that miner.py is running.")
 
 
     def generate_ECDSA_keys(self):
