@@ -6,6 +6,8 @@ import base64
 from flask import Flask, request
 from multiprocessing import Process, Pipe
 import ecdsa
+import os, sys
+import tkinter as tk
 
 from miner_config import MINER_ADDRESS, MINER_NODE_URL, PEER_NODES
 
@@ -246,19 +248,54 @@ def validate_signature(public_key, signature, message):
         return vk.verify(signature, message.encode())
     except:
         return False
+    
+class Miner(tk.Frame):
+    def __init__(self, master=None) -> None:
+        super().__init__(master)
+        self.master = master
+        self.pack(fill=tk.BOTH, expand=True)
 
+        # Title label
+        self.title = tk.Label(self.master, text="=============================\n" + 
+          "Welcome to EduCoin!\n" + 
+          f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
+          "=============================\n" +
+          "Miner:\n")
+        self.title["font"] = ("Arial", 24, "bold")
+        self.title.pack(pady=10)
 
-def welcome_msg():
-    print("""       =========================================\n
-        SIMPLE COIN v1.0.0 - BLOCKCHAIN SYSTEM\n
-       =========================================\n\n
-        You can find more help at: https://github.com/cosme12/SimpleCoin\n
-        Make sure you are using the latest version or you may end in
-        a parallel chain.\n\n\n""")
+class Server(tk.Frame):
+    def __init__(self, master=None) -> None:
+        super().__init__(master)
+        self.master = master
+        self.pack(fill=tk.BOTH, expand=True)
 
+        # Title label
+        self.title = tk.Label(self.master, text="=============================\n" + 
+          "Welcome to EduCoin!\n" + 
+          f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
+          "=============================\n" +
+          "Server\n")
+        self.title["font"] = ("Arial", 24, "bold")
+        self.title.pack(pady=10) 
 
 if __name__ == '__main__':
-    welcome_msg()
+    
+    print("=============================\n" + 
+          "Welcome to EduCoin!\n" + 
+          f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
+          "=============================\n")
+    
+    root = tk.Tk()
+    root.title("EduCoin")
+    root.geometry("700x500")
+    
+    miner = Miner(master=root)
+    miner.mainloop()
+    
+    server = Server(master=root)
+    server.mainloop()
+    
     # Start mining
     pipe_output, pipe_input = Pipe()
     miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
