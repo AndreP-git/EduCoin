@@ -289,12 +289,11 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title("EduCoin")
     root.geometry("700x500")
+    # miner = Miner(master=root)
+    # miner.mainloop()
     
-    miner = Miner(master=root)
-    miner.mainloop()
-    
-    server = Server(master=root)
-    server.mainloop()
+    # server = Server(master=root)
+    # server.mainloop()
     
     # Start mining
     pipe_output, pipe_input = Pipe()
@@ -304,3 +303,5 @@ if __name__ == '__main__':
     # Start server to receive transactions
     transactions_process = Process(target=node.run(), args=pipe_input)
     transactions_process.start()
+    
+
