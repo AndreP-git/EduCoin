@@ -1,9 +1,6 @@
 """This is going to be your wallet. Here you can do several things:
 - Generate a new address (public and private key). You are going
-to use this address (public key) to send or receive any transactions. You can
-have as many addresses as you wish, but keep in mind that if you
-lose its credential data, you will not be able to retrieve it.
-
+to use this address (public key) to send or receive any transactions.
 - Send coins to another address
 - Retrieve the entire blockchain and check your balance
 
@@ -134,43 +131,6 @@ class Wallet(tk.Frame):
                                          text="Confirm",
                                          command=self.send_transaction).pack(pady=10)
     
-    def wallet(self):
-        
-        response = None
-        while response not in ["1", "2", "3", "4"]:
-            response = input("""What do you want to do?
-            1. Generate new wallet
-            2. Transfer coins
-            3. Check transactions
-            4. Quit\n""")
-        
-        if response == "1":
-            # Generate new wallet
-            print("""=========================================\n
-    IMPORTANT: save this credentials or you won't be able to recover your wallet\n
-    =========================================\n""")
-            self.generate_ECDSA_keys()
-        
-        elif response == "2":
-            addr_from = input("From: introduce your wallet address (public key)\n")
-            private_key = input("Introduce your private key\n")
-            addr_to = input("To: introduce destination wallet address\n")
-            amount = input("Amount: number stating how much do you want to send\n")
-            print("=========================================\n\n")
-            print("Is everything correct?\n")
-            print(F"From: {addr_from}\nPrivate Key: {private_key}\nTo: {addr_to}\nAmount: {amount}\n")
-            response = input("y/n\n")
-            if response.lower() == "y":
-                self.send_transaction(addr_from, private_key, addr_to, amount)
-            elif response.lower() == "n":
-                return wallet()  # return to main menu
-        
-        elif response == "3":  # Will always occur when response == 3.
-            self.check_transactions()
-            return wallet()  # return to main menu
-        else:
-            quit()
-
 
     def send_transaction(self):
         """Sends your transaction to different nodes. Once any of the nodes manage
