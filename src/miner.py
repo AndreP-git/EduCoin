@@ -94,6 +94,13 @@ def mine(a, blockchain, node_pending_transactions):
         In order to prevent too many coins to be created, the process
         is slowed down by a proof of work algorithm.
         """
+        
+        # hereeeeeeeeee
+        time.sleep(5)
+        self.root_label["bg"] = "red"
+        time.sleep(5)
+        self.root_label["bg"] = "blue"
+        
         # Get the last proof of work
         last_block = BLOCKCHAIN[-1]
         last_proof = last_block.data['proof-of-work']
@@ -265,16 +272,24 @@ class Miner(tk.Frame):
         self.title.pack(pady=10)
         
         # Canvas
-        canvas = tk.Canvas(self.master, width=900, height=500, background='gray75')
-        canvas.pack(pady=10)
+        self.canvas = tk.Canvas(self.master, width=900, height=500, background='gray75')
+        self.canvas.pack(pady=10)
         
         # Root
         #root_rect = canvas.create_rectangle(10, 10, 200, 50, fill='red', outline='blue', )
-        root_label = tk.Label(canvas, text='Implode!')
-        root_win = canvas.create_window(20, 20, anchor='nw', window=root_label)
+        self.root_label = tk.Label(self.canvas, text='Implode!')
+        self.root_win = self.canvas.create_window(20, 20, anchor='nw', window=self.root_label)
         
         # Line root to pipe
-        canvas.create_line(10, 10, 200, 50, arrow="last")
+        self.canvas.create_line(10, 10, 200, 50, arrow="last")
+    
+        # Start mining
+        miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
+        miner_process.start()
+
+        # Start server to receive transactions
+        transactions_process = Process(target=node.run(), args=pipe_input)
+        transactions_process.start()
         
         
 if __name__ == '__main__':
@@ -284,19 +299,13 @@ if __name__ == '__main__':
           f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
           "=============================\n")
     
+    pipe_output, pipe_input = Pipe()
+
+    
     root = tk.Tk()
     root.title("EduCoin")
     root.geometry("1000x750")
     miner = Miner(master=root)
     miner.mainloop()
-    
-    # # Start mining
-    # pipe_output, pipe_input = Pipe()
-    # miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
-    # miner_process.start()
-
-    # # Start server to receive transactions
-    # transactions_process = Process(target=node.run(), args=pipe_input)
-    # transactions_process.start()
     
 
