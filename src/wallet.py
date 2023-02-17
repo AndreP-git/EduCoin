@@ -28,7 +28,7 @@ class Wallet(tk.Frame):
     def __init__(self, master=None) -> None:
         super().__init__(master)
         self.master = master
-        self.pack(fill=tk.BOTH, expand=True)
+        #self.pack(fill=tk.BOTH, expand=True)
         self.create_widgets()
         
     def create_widgets(self):
@@ -38,7 +38,7 @@ class Wallet(tk.Frame):
           f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
           "=============================\n" +
           "Select action:\n")
-        self.title["font"] = ("Arial", 24, "bold")
+        self.title["font"] = ("Arial", 12, "bold")
         self.title.pack(pady=10) 
             
         # Generate button  

@@ -253,7 +253,7 @@ class Miner(tk.Frame):
     def __init__(self, master=None) -> None:
         super().__init__(master)
         self.master = master
-        self.pack(fill=tk.BOTH, expand=True)
+        # self.pack(fill=tk.BOTH, expand=True)
 
         # Title label
         self.title = tk.Label(self.master, text="=============================\n" + 
@@ -261,24 +261,22 @@ class Miner(tk.Frame):
           f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
           "=============================\n" +
           "Miner:\n")
-        self.title["font"] = ("Arial", 24, "bold")
+        self.title["font"] = ("Arial", 16, "bold")
         self.title.pack(pady=10)
-
-class Server(tk.Frame):
-    def __init__(self, master=None) -> None:
-        super().__init__(master)
-        self.master = master
-        self.pack(fill=tk.BOTH, expand=True)
-
-        # Title label
-        self.title = tk.Label(self.master, text="=============================\n" + 
-          "Welcome to EduCoin!\n" + 
-          f"Currently running: {os.path.basename(sys.argv[0])}\n" + 
-          "=============================\n" +
-          "Server\n")
-        self.title["font"] = ("Arial", 24, "bold")
-        self.title.pack(pady=10) 
-
+        
+        # Canvas
+        canvas = tk.Canvas(self.master, width=900, height=500, background='gray75')
+        canvas.pack(pady=10)
+        
+        # Root
+        #root_rect = canvas.create_rectangle(10, 10, 200, 50, fill='red', outline='blue', )
+        root_label = tk.Label(canvas, text='Implode!')
+        root_win = canvas.create_window(20, 20, anchor='nw', window=root_label)
+        
+        # Line root to pipe
+        canvas.create_line(10, 10, 200, 50, arrow="last")
+        
+        
 if __name__ == '__main__':
     
     print("=============================\n" + 
@@ -288,20 +286,17 @@ if __name__ == '__main__':
     
     root = tk.Tk()
     root.title("EduCoin")
-    root.geometry("700x500")
-    # miner = Miner(master=root)
-    # miner.mainloop()
+    root.geometry("1000x750")
+    miner = Miner(master=root)
+    miner.mainloop()
     
-    # server = Server(master=root)
-    # server.mainloop()
-    
-    # Start mining
-    pipe_output, pipe_input = Pipe()
-    miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
-    miner_process.start()
+    # # Start mining
+    # pipe_output, pipe_input = Pipe()
+    # miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
+    # miner_process.start()
 
-    # Start server to receive transactions
-    transactions_process = Process(target=node.run(), args=pipe_input)
-    transactions_process.start()
+    # # Start server to receive transactions
+    # transactions_process = Process(target=node.run(), args=pipe_input)
+    # transactions_process.start()
     
 
