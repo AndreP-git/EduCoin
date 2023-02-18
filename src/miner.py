@@ -87,6 +87,7 @@ def proof_of_work(last_proof, blockchain):
 
 
 def mine(a, blockchain, node_pending_transactions):
+    
     BLOCKCHAIN = blockchain
     NODE_PENDING_TRANSACTIONS = node_pending_transactions
     while True:
@@ -95,11 +96,8 @@ def mine(a, blockchain, node_pending_transactions):
         is slowed down by a proof of work algorithm.
         """
         
-        # hereeeeeeeeee
+        # setting the time sleep
         time.sleep(5)
-        self.root_label["bg"] = "red"
-        time.sleep(5)
-        self.root_label["bg"] = "blue"
         
         # Get the last proof of work
         last_block = BLOCKCHAIN[-1]
@@ -282,14 +280,14 @@ class Miner(tk.Frame):
         
         # Line root to pipe
         self.canvas.create_line(10, 10, 200, 50, arrow="last")
-    
-        # Start mining
-        miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
-        miner_process.start()
-
-        # Start server to receive transactions
-        transactions_process = Process(target=node.run(), args=pipe_input)
-        transactions_process.start()
+        
+        # Setting update function
+        self.canvas.after(5000, self.update)
+        
+    def update(self) -> None:
+        self.root_label["bg"] = "red"
+        time.sleep(1)
+        self.root_label["bg"] = "blue"
         
         
 if __name__ == '__main__':
@@ -300,12 +298,19 @@ if __name__ == '__main__':
           "=============================\n")
     
     pipe_output, pipe_input = Pipe()
-
     
+    # Start mining
+    miner_process = Process(target=mine, args=(pipe_output, BLOCKCHAIN, NODE_PENDING_TRANSACTIONS))
+    miner_process.start()
+
+    # Start server to receive transactions
+    transactions_process = Process(target=node.run(), args=pipe_input)
+    transactions_process.start()
+    
+    # Start miner GUI
     root = tk.Tk()
     root.title("EduCoin")
     root.geometry("1000x750")
     miner = Miner(master=root)
     miner.mainloop()
-    
 
