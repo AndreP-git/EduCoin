@@ -271,6 +271,3 @@ if __name__ == '__main__':
     transactions_process = Process(target=node.run(), args=pipe_input)
     transactions_process.start()
     
-
-    
-
